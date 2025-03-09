@@ -5,14 +5,15 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } f
 
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDTabp2Dfv--RhHO6L-4hbxdb35HbuAxd8",
-  authDomain: "bakkar-jr.firebaseapp.com",
-  projectId: "bakkar-jr",
-  storageBucket: "bakkar-jr.firebasestorage.app",
-  messagingSenderId: "89884942656",
-  appId: "1:89884942656:web:7005bafaa4cc211eb35aa5",
-  measurementId: "G-RETWEG4PT8"
-};
+    apiKey: "AIzaSyCuWETfPgHXczuOd51NEcSFRar82HHAif8",
+    authDomain: "practice-eb7b1.firebaseapp.com",
+    projectId: "practice-eb7b1",
+    storageBucket: "practice-eb7b1.firebasestorage.app",
+    messagingSenderId: "194151170212",
+    appId: "1:194151170212:web:4d588abb89f2fc0ea7a631",
+    measurementId: "G-NBCFC635Q8"
+  };
+
 
 
 const app = initializeApp(firebaseConfig);
