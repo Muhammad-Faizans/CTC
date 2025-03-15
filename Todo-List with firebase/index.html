@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>To-Do App</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" />
+</head>
+<body class="bg-gray-200">
+    <div class="container mx-auto">
+        <div class="flex justify-center items-center min-h-screen">
+            <!-- To-Do Input Section -->
+            <div class="w-1/3 bg-white p-6 rounded-lg shadow-lg">
+                <h1 class="text-2xl font-bold mb-4 text-center">To-Do List</h1>
+                <div class="flex">
+                    <input type="text" id="inp" class="w-full p-2 border border-gray-300 rounded-l-lg focus:outline-none" placeholder="Add a new task..." />
+                    <button id="addBtn" class="bg-blue-500 text-white px-4 py-2 rounded-r-lg hover:bg-blue-600">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <button id="updateBtn" class="bg-green-500 text-white px-4 py-2 rounded-r-lg hover:bg-green-600 hidden">
+                        <i class="fas fa-check"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tasks Section -->
+            <div class="w-1/3 bg-white p-6 rounded-lg shadow-lg ml-6">
+                <h1 class="text-2xl font-bold mb-4 text-center">Tasks</h1>
+                <ul id="ul" class="space-y-3"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
