@@ -20,13 +20,6 @@ A fully responsive **Foodpanda Clone** web application built using **HTML**, **T
 - **Backend**: Firebase (Firestore, Authentication, Hosting)
 - **Authentication**: Firebase Email/Password
 
-## 📁 Folder Structure
-
-foodpanda-clone/ │ ├── index.html # Landing page ├── user-dashboard.html # User interface for browsing and checkout ├── admin-dashboard.html # Admin interface for product and order management ├── /css/ # Tailwind CSS styles ├── /js/ # JavaScript logic for interaction └── firebase-config.js # Firebase initialization and configuration
-
-bash
-Copy
-Edit
 
 ## 🔧 Setup Instructions
 
@@ -53,16 +46,12 @@ Or deploy with Firebase Hosting (see below)
 📦 Deployment (Firebase Hosting)
 To deploy the project on Firebase Hosting:
 
-bash
-Copy
-Edit
+
 firebase init
 firebase deploy
 Make sure you have the Firebase CLI installed and authenticated:
 
-bash
-Copy
-Edit
+
 npm install -g firebase-tools
 firebase login
 📸 Screenshots
@@ -71,7 +60,6 @@ Add screenshots of the User and Admin dashboards here to visually showcase your 
 ✨ Future Improvements
 Integrate payment gateway (e.g., Stripe or Razorpay)
 
-Add product filtering and search functionality
 
 Order status updates and tracking
 
