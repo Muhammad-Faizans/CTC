@@ -59,10 +59,10 @@ async function filterDishesByCategory(category) {
   }
   
   try {
+    // Remove orderBy to avoid index requirements
     const q = query(
       collection(db, "dishes"), 
-      where("category", "==", category),
-      orderBy("createdAt", "desc")
+      where("category", "==", category)
     );
     
     const querySnapshot = await getDocs(q);
@@ -77,8 +77,11 @@ async function filterDishesByCategory(category) {
     
     return dishes;
   } catch (error) {
-    console.error("Error filtering dishes:", error);
-    showError("Error", "Failed to filter dishes.");
+    console.error("Error filtering dishes by category:", error);
+    console.error("Category:", category);
+    console.error("Error code:", error.code);
+    console.error("Error message:", error.message);
+    showError("Error", "Failed to filter dishes. Please try again later.");
     return [];
   }
 }
@@ -132,65 +135,79 @@ async function loadAllDishes(filters = {}) {
   
   dishesContainer.innerHTML = '<div class="flex justify-center my-8"><div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-lightpink"></div></div>';
   
-  // Get base dishes list based on category filter
-  let dishes = await (filters.category ? filterDishesByCategory(filters.category) : getAllDishes());
+  console.log('Loading dishes with filters:', filters);
   
-  // Apply search filter if present
-  if (filters.search) {
-    dishes = searchDishes(dishes, filters.search);
-  }
-  
-  // Apply sorting
-  dishes = sortDishes(dishes, filters.sortBy || 'name_asc');
-  
-  if (dishes.length === 0) {
+  try {
+    // Get base dishes list based on category filter
+    let dishes = await (filters.category ? filterDishesByCategory(filters.category) : getAllDishes());
+    console.log('Dishes after category filter:', dishes.length);
+    
+    // Apply search filter if present
+    if (filters.search) {
+      dishes = searchDishes(dishes, filters.search);
+      console.log('Dishes after search filter:', dishes.length);
+    }
+    
+    // Apply sorting
+    dishes = sortDishes(dishes, filters.sortBy || 'name_asc');
+    
+    if (dishes.length === 0) {
+      dishesContainer.innerHTML = `
+        <div class="bg-white rounded-xl shadow-card p-8 text-center">
+          <h3 class="text-xl font-semibold text-gray-700 mb-2">No Dishes Found</h3>
+          <p class="text-gray-500">We couldn't find any dishes matching your criteria.</p>
+        </div>
+      `;
+      return;
+    }
+    
+    let dishesHTML = `
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    `;
+    
+    dishes.forEach(dish => {
+      dishesHTML += `
+        <div class="bg-white rounded-xl shadow-card overflow-hidden transition-transform duration-300 hover:scale-[1.02]" data-id="${dish.id}">
+          <div class="h-48 overflow-hidden">
+            <img src="${dish.imageUrl}" alt="${dish.name}" class="w-full h-full object-cover">
+          </div>
+          <div class="p-4">
+            <div class="flex justify-between items-start mb-2">
+              <h3 class="text-xl font-semibold text-bluishgrey">${dish.name}</h3>
+              <span class="bg-lightpink text-white text-sm py-1 px-2 rounded">${dish.category}</span>
+            </div>
+            <p class="text-gray-500 mb-4 line-clamp-2">${dish.description}</p>
+            <div class="flex justify-between items-center">
+              <span class="text-lg font-bold text-lightpink">PKR ${dish.price}</span>
+              <button class="add-to-cart-btn bg-lightpink text-white py-1.5 px-4 rounded-lg hover:bg-pink transition-colors" data-id="${dish.id}">
+                Add to Cart
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+    
+    dishesHTML += `</div>`;
+    dishesContainer.innerHTML = dishesHTML;
+    
+    // Add event listeners for add to cart buttons
+    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const dishId = btn.getAttribute('data-id');
+        addDishToCart(dishId);
+      });
+    });
+  } catch (error) {
+    console.error('Error in loadAllDishes:', error);
     dishesContainer.innerHTML = `
       <div class="bg-white rounded-xl shadow-card p-8 text-center">
-        <h3 class="text-xl font-semibold text-gray-700 mb-2">No Dishes Found</h3>
-        <p class="text-gray-500">We couldn't find any dishes matching your criteria.</p>
+        <h3 class="text-xl font-semibold text-red-500 mb-2">Error Loading Dishes</h3>
+        <p class="text-gray-500">There was a problem loading the dishes. Please try again later.</p>
       </div>
     `;
-    return;
   }
-  
-  let dishesHTML = `
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-  `;
-  
-  dishes.forEach(dish => {
-    dishesHTML += `
-      <div class="bg-white rounded-xl shadow-card overflow-hidden transition-transform duration-300 hover:scale-[1.02]" data-id="${dish.id}">
-        <div class="h-48 overflow-hidden">
-          <img src="${dish.imageUrl}" alt="${dish.name}" class="w-full h-full object-cover">
-        </div>
-        <div class="p-4">
-          <div class="flex justify-between items-start mb-2">
-            <h3 class="text-xl font-semibold text-bluishgrey">${dish.name}</h3>
-            <span class="bg-lightpink text-white text-sm py-1 px-2 rounded">${dish.category}</span>
-          </div>
-          <p class="text-gray-500 mb-4 line-clamp-2">${dish.description}</p>
-          <div class="flex justify-between items-center">
-            <span class="text-lg font-bold text-lightpink">PKR ${dish.price}</span>
-            <button class="add-to-cart-btn bg-lightpink text-white py-1.5 px-4 rounded-lg hover:bg-pink transition-colors" data-id="${dish.id}">
-              Add to Cart
-            </button>
-          </div>
-        </div>
-      </div>
-    `;
-  });
-  
-  dishesHTML += `</div>`;
-  dishesContainer.innerHTML = dishesHTML;
-  
-  // Add event listeners for add to cart buttons
-  document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-    btn.addEventListener('click', async (e) => {
-      e.preventDefault();
-      const dishId = btn.getAttribute('data-id');
-      addDishToCart(dishId);
-    });
-  });
 }
 
 // Add dish to cart
@@ -219,9 +236,8 @@ async function addDishToCart(dishId) {
   }
 }
 
-// Setup event listeners
+// Setup event listeners for Search input
 function setupEventListeners() {
-  // Search input
   const searchInput = document.getElementById('searchDish');
   if (searchInput) {
     searchInput.addEventListener('input', debounce(() => {
@@ -256,11 +272,16 @@ function setupEventListeners() {
   }
 }
 
-// Apply all filters
+// filters
 function applyFilters() {
   const searchTerm = document.getElementById('searchDish')?.value || '';
   const category = document.getElementById('filterCategory')?.value || '';
   const sortBy = document.getElementById('sortBy')?.value || 'name_asc';
+  
+  console.log('Applying filters:');
+  console.log('- Search term:', searchTerm);
+  console.log('- Category:', category);
+  console.log('- Sort by:', sortBy);
   
   loadAllDishes({
     search: searchTerm,
